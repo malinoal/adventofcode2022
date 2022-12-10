@@ -29,6 +29,7 @@ public class Ten {
                 }
             }
         }
+        machine.printScreen();
         return machine.getResult();
     }
 
@@ -37,11 +38,15 @@ public class Ten {
         int cycle;
         int result;
         List<Integer> interestingCycles;
+
+        boolean[] frameBuffer;
         public Machine() {
             X = 1;
             cycle = 1;
             result = 0;
             interestingCycles = Arrays.asList(20, 60, 100, 140, 180, 220);
+            frameBuffer = new boolean[240];
+            for (int i = 0; i < 240; i++) frameBuffer[i] = false;
         }
 
         public void addX(int V) {
@@ -52,7 +57,13 @@ public class Ten {
         }
 
         public void tick() {
-            System.out.println("Cycle: " + cycle + " X: " + X);
+            int printingPosition = (cycle % 40) - 1;
+            if (printingPosition == -1) printingPosition = 39;
+            System.out.println("Cycle: " + cycle + " X: " + X + " Printing position " + printingPosition);
+            if (Math.abs(printingPosition - X) <= 1) {
+                System.out.println("Rendering Sprite...");
+                frameBuffer[cycle-1] = true;
+            }
             if (interestingCycles.contains(cycle)) {
                 System.out.println("Interesting Cycle: " + cycle + " X: " + X);
                 System.out.println("Signal Strength: " + cycle * X);
@@ -64,6 +75,15 @@ public class Ten {
 
         public int getResult() {
             return result;
+        }
+
+        public void printScreen() {
+            for (int i = 0; i < 6; i++) {
+                for (int j = 0; j < 40; j++) {
+                    System.out.print(frameBuffer[j+i*40] ? '#' : '.');
+                }
+                System.out.println();
+            }
         }
     }
 
